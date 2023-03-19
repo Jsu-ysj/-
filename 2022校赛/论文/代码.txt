@@ -1,0 +1,377 @@
+import pandas as pd
+import math
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from collections import Counter
+import matplotlib.ticker as ticker
+    
+#通过Order划分
+def plot_by_order(order, s):
+    # print(s)
+    cnt = {}
+    for i in range(len(order)):
+        if(s[i] != 'W'):
+            continue
+        cnt[order[i]] = cnt.get(order[i], 0) + 1
+    
+    
+    tmp = dict(sorted(cnt.items(), key=lambda x : x[1]))
+    x,y = [], []
+    for a, b in tmp.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 8))
+    plt.barh(x, y, height=0.5)
+    plt.title('Count by Order')
+    for x, y in zip(x,y):
+        plt.text(y+30, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Order', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+    
+    
+#通过Family划分
+def plot_by_family(Family, s):
+    # print(s)
+    cnt = {}
+    for i in range(len(Family)):
+        if(s[i] != 'W'):
+            continue
+        cnt[Family[i]] = cnt.get(Family[i], 0) + 1
+
+    tmp = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in tmp.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    print(y)
+    
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 10))
+    plt.barh(x[-20:], y[-20:], height=0.5)
+    plt.title('Count by Family')
+    for x, y in zip(x[-20:], y[-20:]):
+        plt.text(y+30, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Family', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+            
+     
+#通过Genus划分
+def plot_by_Genus(Genus, s):
+    # print(s)
+    cnt = {}
+    for i in range(len(Genus)):
+        if(s[i] != 'W'):
+            continue
+        cnt[Genus[i]] = cnt.get(Genus[i], 0) + 1
+
+    tmp = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in tmp.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    print(y)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 10))
+    plt.barh(x[-20:], y[-20:], height=0.5)
+    plt.title('Count by Genus')
+    for x, y in zip(x[-20:], y[-20:]):
+        plt.text(y+20, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Genus', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+
+
+#通过Taxon划分
+def plot_by_Taxon(Taxon, s):
+    # print(s)
+    cnt = {}
+    for i in range(len(Taxon)):
+        if(s[i] != 'W'):
+            continue
+        cnt[Taxon[i]] = cnt.get(Taxon[i], 0) + 1
+
+    tmp = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in tmp.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    # print(y)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 10))
+    plt.barh(x[-20:], y[-20:], height=0.5)
+    plt.title('Count by Taxon')
+    for x, y in zip(x[-20:], y[-20:]):
+        plt.text(y+10, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Taxon', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+
+
+def plot_by_purpose(Taxon,  pur, s):
+    W_name = []
+    cnt_w, cnt = {}, {}
+    for i in range(len(Taxon)):
+        if(s[i] == 'W'):
+            cnt_w[str(pur[i])] = cnt_w.get(str(pur[i]), 0) + 1
+            W_name.append(Taxon[i])
+        else:
+            if(Taxon[i] in W_name):
+                continue
+            else:
+                cnt[str(pur[i])] = cnt.get(str(pur[i]), 0) + 1
+    
+    # print(cnt_w)
+        #构建野生条形图形
+    x, y = [], []
+    for a, b in cnt_w.items():
+        if(a == "nan"):
+            continue
+        x.append(a)
+        y.append(b)
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 8))
+    plt.bar(x, y, width=0.5)
+    plt.title('Purpose of wildlife trade')
+    for tmp_x, tmp_y in zip(x,y):
+        plt.text(tmp_x, tmp_y, '%.0F' %
+                 tmp_y, ha='center', va='bottom', fontsize=12)
+
+    plt.xticks(rotation=30, color='b')
+    plt.xlabel('purpose', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+    
+    #非野生条形图
+    xx, yy = [], []
+    for a, b in cnt.items():
+        if(a == "nan"):
+            continue
+        xx.append(a)
+        yy.append(int(b))
+    plt.figure(figsize=(12, 8))
+    plt.bar(xx, yy, width=0.5)
+    plt.title('Non wildlife trade purpose')
+    for tmp_x, tmp_y in zip(xx, yy):
+        plt.text(tmp_x, tmp_y, '%.0F' %
+                 tmp_y, ha='center', va='bottom', fontsize=12)
+
+    plt.xticks(rotation=30, color='b')
+    plt.xlabel('purpose', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.show()
+    
+    #野生饼状图
+    Num = 0
+    for tmp in y:
+        Num += int(tmp)
+    #数据计算处理
+    print(y)
+    sizes = [y[0]/Num*200, y[1]/Num*200, y[2]/Num*200, y[3] / Num*200,
+             y[4]/Num*200, y[5]/Num*200, y[6]/Num*200, y[7]/Num*200,
+             y[8]/Num*200, y[9]/Num*200, y[10]/Num*200, y[11]/Num*200,
+             ]
+    #各区域颜色
+    colors = ['red', 'orange', '#f173ac', 'green', 'purple', 'blue', '#9b95c9',
+              '#f7acbc', '#00ae9d', '#90d7ec', '#11264f', '#ffe600', 'black']
+    #设置突出模块偏移值
+    expodes = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0.1)
+    plt.figure(figsize=(12, 10))
+    #设置绘图属性并绘图
+    plt.pie(sizes, pctdistance=0.9, explode=expodes, labels=x, shadow=True, colors=colors)
+    ## 用于显示为一个长宽相等的饼图
+    plt.axis('equal')
+    #显示
+    plt.legend()
+    plt.show()
+
+    #非野生
+    Num = 0
+    for tmp in yy:
+        Num += int(tmp)
+    #数据计算处理
+    sizes = [yy[0]/Num*200, yy[1]/Num*200, yy[2]/Num*200, yy[3] / Num*200,
+             yy[4]/Num*200, yy[5]/Num*200, yy[6]/Num*200, yy[7]/Num*200,
+             yy[8]/Num*200, yy[9]/Num*200, yy[10]/Num*200,
+             ]
+    #设置突出模块偏移值
+    expodes2 = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1)
+    plt.figure(figsize=(12, 10))
+    #设置绘图属性并绘图
+    plt.pie(sizes, pctdistance=0.9, explode=expodes2,
+            labels=xx, shadow=True, colors=colors)
+    ## 用于显示为一个长宽相等的饼图
+    plt.axis('equal')
+    #显示
+    plt.legend()
+    plt.show()
+   
+   
+   
+#非典论证
+def plot_importer(num_importer, importer, s, year):
+    cnt = {}
+    cnt2 = {}
+    for i in range(len(s)):
+        
+        if(s[i] == 'W' and str(num_importer[i]) != 'nan' and str(importer[i]) != 'nan'
+           and year[i] == 2003): 
+            # print(str(s[i]) + ' ' + str(importer[i]) + ' ' + str(num_importer[i]))
+            cnt[importer[i]] = cnt.get(importer[i], 0) + int(num_importer[i])
+        if(s[i] == 'W' and str(num_importer[i]) != 'nan' and str(importer[i]) == 'CN'):
+            cnt2[year[i]] = cnt2.get(year[i], 0) + int(num_importer[i])
+            
+    cnt = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in cnt.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(15, 15))
+    plt.barh(x, y, height=0.9)
+    plt.title('Import statistics of countries in 2003')
+    for x, y in zip(x, y):
+        plt.text(y+30, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Quantity (unit/piece)', fontsize=12)
+    plt.ylabel('country', fontsize=12)
+    plt.show()
+    # print(cnt)
+    
+    # CN的统计图时间
+    x_year, y_year = [], []
+    for a, b in cnt2.items():
+        x_year.append(a)
+        y_year.append(b)
+    plt.figure(figsize=(18, 10))
+    plt.title('Changes in China import trade from 1990 to 2022')
+    plt.plot(x_year, y_year, lw=3, ls='-', c='y', label='Import transactions')
+    for xx, yy in zip(x_year, y_year):
+        plt.text(xx, yy, '%.0F' % yy, ha='center', va='bottom', fontsize=10)
+    plt.xlabel('Year', fontsize=12)
+    plt.ylabel('Count', fontsize=12)
+    plt.xticks(x_year, rotation=30, color='b')
+    plt.legend(fontsize=15)
+    plt.show()
+
+    
+def plot_xingguan(num_importer, importer, s, year):
+    cnt = {}
+    cnt2 = {}
+    for i in range(len(s)):
+        
+        if(s[i] == 'W' and str(num_importer[i]) != 'nan' and str(importer[i]) != 'nan'
+           and year[i] == 2020): 
+            # print(str(s[i]) + ' ' + str(importer[i]) + ' ' + str(num_importer[i]))
+            cnt[importer[i]] = cnt.get(importer[i], 0) + int(num_importer[i])
+        if(s[i] == 'W' and str(num_importer[i]) != 'nan' and str(importer[i]) == 'US'):
+            cnt2[year[i]] = cnt2.get(year[i], 0) + int(num_importer[i])
+            
+    cnt = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in cnt.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(15, 15))
+    plt.barh(x, y, height=0.9)
+    plt.title('Import statistics of countries in 2020')
+    for x, y in zip(x, y):
+        plt.text(y+30, x, '%.0F' % y, ha='center', fontsize=10)
+    plt.xlabel('Quantity (unit/piece)', fontsize=12)
+    plt.ylabel('country', fontsize=12)
+    plt.show()
+    # print(cnt)
+    
+    # CN的统计图时间
+    x_year, y_year = [], []
+    for a, b in cnt2.items():
+        x_year.append(a)
+        y_year.append(b)
+    plt.figure(figsize=(18, 10))
+    plt.title('Changes in US import trade from 1990 to 2022')
+    plt.plot(x_year, y_year, lw=3, ls='-', c='y', label='Import transactions')
+    for xx, yy in zip(x_year, y_year):
+        plt.text(xx, yy, '%.0F' % yy, ha='center', va='bottom', fontsize=10)
+    plt.xlabel('Year', fontsize=12)
+    plt.ylabel('Conut', fontsize=12)
+    plt.xticks(x_year, rotation=30, color='b')
+    plt.legend(fontsize=15)
+    plt.show()
+
+
+def plot_T(pur,s,fen):
+    cnt = {}
+    for i in range(len(pur)):
+        if(pur[i] == 'Z' and s[i] == 'W'):
+            cnt[fen[i]] = cnt.get(fen[i], 0) + 1
+    # print(cnt)
+    tmp = dict(sorted(cnt.items(), key=lambda x: x[1]))
+    x, y = [], []
+    for a, b in tmp.items():
+        x.append(a)
+        y.append(b)
+    #构建条形图形
+    # print(y)
+
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文乱码
+    plt.rcParams['axes.unicode_minus'] = False  # 解决负号乱码
+    plt.figure(figsize=(12, 10))
+    plt.bar(x[-20:], y[-20:], width=0.5)
+    plt.title('Used for wildlife classification in zoos')
+    for xx, yy in zip(x[-20:], y[-20:]):
+        plt.text(xx, yy, '%.0F' % yy, ha='center', fontsize=10)
+    plt.xlabel('Family', fontsize=15)
+    plt.ylabel('Count', fontsize=15)
+    plt.xticks(x[-20:], rotation=60, color='b')
+    plt.legend(fontsize=15)
+    plt.show()
+    
+
+def solve():
+    
+    data = pd.read_excel('trade_mammals_wild_live_1990_2021.xlsx')
+    
+
+    year = data.iloc[:,0]
+    name = data.iloc[:,2]
+    order = data.iloc[:,4]
+    family = data.iloc[:, 5]
+    Genus = data.iloc[:,6]
+    Importer = data.iloc[:,7]
+    Exporter = data.iloc[:,8]
+    Origin = data.iloc[:,9]   
+    num_Importer = data.iloc[:, 10]
+    num_Exporter = data.iloc[:, 11]
+    pur  = data.iloc[:,14]
+    Source = data.iloc[:,15]
+    
+    
+    plot_by_order(order,Source)
+    plot_by_family(family, Source)
+    plot_by_Genus(Genus, Source)
+    plot_by_Taxon(name, Source)
+    plot_by_purpose(name, pur, Source)
+    plot_importer(num_Importer, Importer, Source, year)
+    plot_xingguan(num_Exporter, Importer, Source, year)
+    plot_T(pur, Source, family)
+
+
+if __name__ == '__main__':
+    solve()
